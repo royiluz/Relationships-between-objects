@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
     model_path = "./models/yolo.h5"
     input_path = "./input/pic_3.jpeg"
-    output_path = "./output/new_pic.jpg"
+    output_path = "./output/new_pic_1.jpg"
 
     # detector.setModelTypeAsTinyYOLOv3()
     detector.setModelTypeAsYOLOv3()
