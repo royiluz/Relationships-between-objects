@@ -1,75 +1,58 @@
-import cv2
-from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
-from keras.layers import Activation, Dropout, Flatten, Conv2D, MaxPooling2D, Dense, MaxPool2D, Input
-from keras.applications.resnet50 import ResNet50
-from keras.models import Model, load_model
-import numpy as np
-
-
-def create_neural_network():
-
-    weights_path = "imagenet"
-    weights_path_1 = "C:/Users/roye7/Desktop/Python Projects/Objects Relationship/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5"
-    num_classes = 2
-
-    model = Sequential()
-    model.add(ResNet50(include_top=False, weights=weights_path, pooling='avg'))
-    model.add(Dense(num_classes, activation='softmax'))
-    model.layers[0].trainable = False
-
-    model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
-    return model
-
-
-def fit_model(model_):
-    BATCH_SIZE = 4
-
-    image_gen = ImageDataGenerator(rotation_range=30, width_shift_range=0.1, height_shift_range=0.1, shear_range=0.2,
-                                   zoom_range=0.2, horizontal_flip=True, vertical_flip=False, fill_mode='nearest')
-
-    train_image_gen = image_gen.flow_from_directory('C:/Users/roye7/drive_images/Train', target_size=(300, 300),
-                                                    batch_size=BATCH_SIZE, class_mode='categorical')
-
-    test_image_gen = image_gen.flow_from_directory('C:/Users/roye7/drive_images/Validation', target_size=(300, 300),
-                                                   batch_size=BATCH_SIZE, class_mode='categorical')
-
-    print(train_image_gen.class_indices)
-    print(test_image_gen.class_indices)
-
-    # print(model.summary())
-    result = model_.fit(train_image_gen, epochs=100, validation_data=test_image_gen)
-
-    # model.save("OurModel.h5")
-    print(result)
-    print(result.history['accuracy'])
-
+from imageai.Detection import ObjectDetection
+import tensorflow as tf
 
 if __name__ == "__main__":
-    # model = create_neural_network()
 
-    image_gen = ImageDataGenerator(rotation_range=30, width_shift_range=0.1, height_shift_range=0.1, shear_range=0.2,
-                                   zoom_range=0.2, horizontal_flip=True, vertical_flip=False, fill_mode='nearest')
-    train_image_gen = image_gen.flow_from_directory('C:/Users/roye7/drive_images/Train', target_size=(300, 300),
-                                                    batch_size=4, class_mode='categorical')
-    print(train_image_gen.class_indices)
+    # Constants
+    TABLE = "dining table"
+    CUP = ["cup", "wine glass"]
+    CHAIR = "chair"
 
-    model = load_model('models/CupUnderAboveChair.h5')
+    tf.compat.v1.disable_eager_execution()
 
-    model.compile(loss='categorical_crossentropy',
-                  optimizer='rmsprop',
-                  metrics=['accuracy'])
+    # input/output values:
+    model_path = "./models/yolo.h5"
+    input_path = "./input/6.jpeg"
+    output_path = "./new_pic.jpg"
 
-    img = cv2.imread('2_above.jpeg')
-    img = cv2.resize(img, (300, 300))
-    img = np.reshape(img, [1, 300, 300, 3])
+    # Create detector with yolo
+    detector = ObjectDetection()
+    detector.setModelTypeAsYOLOv3()
+    detector.setModelPath(model_path)
+    detector.loadModel()
+    detection = detector.detectObjectsFromImage(input_image=input_path, output_image_path=output_path)
 
-    classes = model.predict_classes(img)
-    classes_proba = model.predict_proba(img)
+    # Iterate each pair of objects
+    for obj_1 in detection:
+        for obj_2 in detection:
+            obj_1_x1, obj_1_y1, obj_1_x2, obj_1_y2 = obj_1["box_points"]
+            obj_2_x1, obj_2_y1, obj_2_x2, obj_2_y2 = obj_2["box_points"]
 
-    # get predicted class name and print:
-    position = list(train_image_gen.class_indices.values()).index(classes[0])
-    print(list(train_image_gen.class_indices.keys())[position])
+            # Check relation between Table and Chair:
+            if obj_1["name"] == TABLE and obj_2["name"] == CHAIR:
+                chair_width = obj_2_x2 - obj_2_x1
+                if obj_2_x1 + chair_width * 0.2 < obj_1_x1:
+                    print("Chair left to table")
+                elif obj_1_x2 < obj_2_x2 - chair_width * 0.2:
+                    print("Chair right to table")
 
-    # print(classes)
-    print(classes_proba)
+            # Check relation between Cup/Glass and Chair:
+            if (obj_1["name"] in CUP) and obj_2["name"] == CHAIR:
+                chair_height = obj_2_y2 - obj_2_y1
+                chair_width = obj_2_x2 - obj_2_x1
+                # If cup between the chair x borders:
+                if obj_2_x1 - chair_width * 0.2 < obj_1_x1 and obj_1_x2 < obj_2_x2 + chair_width * 0.2:
+                    if obj_2_y1 < obj_1_y1:
+                        if obj_2_y1 + chair_height * 0.66 < obj_1_y2:
+                            print(f'{obj_1["name"]} under chair')
+                        else:
+                            print(f'{obj_1["name"]} above chair')
+
+            # Check relation between Cup and Table:
+            if (obj_1["name"] == TABLE) and (obj_2["name"] in CUP):
+                table_height = obj_1_y2 - obj_1_y1
+                if obj_1_x1 < obj_2_x1 and obj_2_x2 < obj_1_x2:
+                    if (obj_2_y2 < obj_1_y1 + table_height * 0.1) and (obj_1_y1 - table_height * 0.2 < obj_2_y2):
+                        print(f'{obj_2["name"]} above table')
+                    elif obj_2_y2 < obj_2_y2:
+                        print(f'{obj_2["name"]} under table')
