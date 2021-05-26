@@ -121,7 +121,7 @@ if __name__ == "__main__":
                   optimizer='rmsprop',
                   metrics=['accuracy'])
 
-    img = cv2.imread('input/2.jpeg')
+    img = cv2.imread('input/6.jpeg')
     img = cv2.resize(img, (300, 300))
     img = np.reshape(img, [1, 300, 300, 3])
 
