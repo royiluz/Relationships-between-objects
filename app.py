@@ -1,7 +1,9 @@
 from imageai.Detection import ObjectDetection
 import tensorflow as tf
 from flask import Flask, render_template, request
-
+from PIL import Image
+import base64
+import io
 
 def getRelations(img_path):
 
@@ -56,8 +58,8 @@ def getRelations(img_path):
             # Check relation between Cup and Table:
             elif (obj_1["name"] == TABLE) and (obj_2["name"] not in TABLE_CHAIR):
                 table_height = obj_1_y2 - obj_1_y1
-                if obj_1_x1 < obj_2_x1 and obj_2_x2 < obj_1_x2:
-                    if (obj_2_y2 < obj_1_y1 + table_height * 0.1) and (obj_1_y1 - table_height * 0.2 < obj_2_y2):
+                if obj_1_x1 < obj_2_x1 + obj_2_width*0.2 and obj_2_x2 - obj_2_width*0.2 < obj_1_x2:
+                    if (obj_2_y2 < obj_1_y1 + table_height * 0.3) and (obj_1_y1 - table_height * 0.3 < obj_2_y2):
                         print(f'{obj_2["name"]} above table')
                         relations.append(f'{obj_2["name"]} above table')
                     elif obj_2_y2 < obj_2_y2:
@@ -97,8 +99,11 @@ if __name__ == "__main__":
         if uploaded_file.filename != '':
             uploaded_file.save(uploaded_file.filename)
             relations = getRelations(uploaded_file.filename)
-            print(relations)
-        return render_template('resultsform.html', relations=relations)
+            im = Image.open("new_pic.jpg")
+            data = io.BytesIO()
+            im.save(data, "JPEG")
+            encoded_img_data = base64.b64encode(data.getvalue())
+        return render_template('resultsform.html', relations=relations, image=encoded_img_data.decode('utf-8'))
 
     app.run("localhost", "9999", debug=True)
 
