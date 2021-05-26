@@ -72,7 +72,6 @@ def getRelations(img_path):
                 elif (obj_1_x1 + obj_1_width * 0.5 > obj_2_x2) or (obj_2_x2 - obj_2_width * 0.5 < obj_1_x1):
                     print(f"{obj_1['name']} right to {obj_2['name']}")
                     relations.append(f"{obj_1['name']} right to {obj_2['name']}")
-
     return relations
 
 
@@ -86,23 +85,20 @@ if __name__ == "__main__":
     # print(relation_array)
 
     # Using flask
-    app = Flask('stock_pricer')
+    app = Flask(__name__)
 
     @app.route('/')
     def show_predict_stock_form():
         return render_template('predictorform.html')
 
     @app.route('/results', methods=['POST'])
-    def results():
-        form = request.form
-        if request.method == 'POST':
-            print("-----------------------")
-            # write your function that loads the model
-            # model = get_model()  # you can use pickle to load the trained model
-            img = request.form['image1']
-            print(img)
-            # predicted_relations = getRelations(img)
-            return render_template('resultsform.html')
+    def upload_file():
+        uploaded_file = request.files['image_file']
+        if uploaded_file.filename != '':
+            uploaded_file.save(uploaded_file.filename)
+            relations = getRelations(uploaded_file.filename)
+            print(relations)
+        return render_template('resultsform.html', relations=relations)
 
     app.run("localhost", "9999", debug=True)
 

@@ -1,38 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Image upload demo</title>
-    <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <meta http-equiv="X-UA-Compatible" content="ie=edge">-->
+<!--    <title>Image upload demo</title>-->
+<!--    <link rel="stylesheet" href="/libs/bootstrap/dist/css/bootstrap.min.css">-->
+<!--    <link rel="stylesheet" href="style.css">-->
+<!--</head>-->
 
-<body class="container">
-    <h1>Image upload demo</h1>
-    <form id="theImageForm">
-        <label for="theImageField" id="theImageContainer">
-            <input type="file" id="theImageField" accept="image/png, image/jpeg">
-            Click here to upload or <b>drag-and-drop</b> an image...
-        </label>
-        <p id="errorMessage" class="hide"></p>
-        <p id="successMessage" class="hide"></p>
-        <button class="btn btn-lg btn-primary" type="submit">Upload</button>
-        <a href="" id="clearImage">Clear</a>
+<!--<body class="container">-->
+<!--    <h1>Image upload demo</h1>-->
+<!--    <form id="theImageForm">-->
+<!--        <label for="theImageField" id="theImageContainer">-->
+<!--            <input type="file" id="theImageField" accept="image/png, image/jpeg">-->
+<!--            Click here to upload or <b>drag-and-drop</b> an image...-->
+<!--        </label>-->
+<!--        <p id="errorMessage" class="hide"></p>-->
+<!--        <p id="successMessage" class="hide"></p>-->
+<!--        <button class="btn btn-lg btn-primary" type="submit">Upload</button>-->
+<!--        <a href="" id="clearImage">Clear</a>-->
+<!--    </form>-->
+
+<!--    <script src="/libs/jquery/dist/jquery.min.js"></script>-->
+<!--    <script src="/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>-->
+<!--    <script src="client.js"></script>-->
+<!--</body>-->
+
+<!--</html>-->
+
+
+<!doctype html>
+<html>
+  <head>
+    <title>File Upload</title>
+  </head>
+  <body>
+    <h1>File Upload</h1>
+    <form method="POST" action="http://localhost:9999/results" enctype="multipart/form-data">
+      <p><input type="file" name="image_file" accept="image/*"></p>
+      <p><input type="submit" value="Submit"></p>
     </form>
-
-
-    <script src="/libs/jquery/dist/jquery.min.js"></script>
-    <script src="/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="client.js"></script>
-</body>
-
+  </body>
 </html>
-
-
-
 
 <!--<html>-->
 <!--<body>-->
