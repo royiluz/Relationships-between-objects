@@ -5,6 +5,7 @@ from PIL import Image
 import base64
 import io
 
+
 def getRelations(img_path):
 
     model_path = "./models/yolo.h5"
