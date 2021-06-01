@@ -2,15 +2,34 @@
 <html>
 <head>
     <title>Relations</title>
+     <link rel="stylesheet" href="{{ url_for('static',filename='style_result.css') }}">
 </head>
 <body>
-<h3>Image:</h3>
-<div><img id="picture" src="data:image/jpeg;base64,{{ image }}"></div>
+<div class="container">
+    <div class="left_div"><img id="picture" style='height: 100%; width: 100%; object-fit: contain'
+                            src="data:image/jpeg;base64,{{ image }}">
+    </div>
+    <div class="right_top_div">
+        <h3>Objects:</h3>
+        <div id="objects_list">
+            {% for name in names %}
+                <h4>
+                    {{names[name]}} {{name}}
+                </h4>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="right_bottom_div">
+        <h3>Relations:</h3>
+        <div id="relations_list">
+            {% for rel in relations %}
+                <h4>
+                    {{rel}}
+                </h4>
+            {% endfor %}
+        </div>
+    </div>
 
-<h3>Relations:</h3>
-<div>This is the predicted relations <strong>{{ relations }}</strong>.</div>
-
-</div>
 </div>
 </body>
 </html>

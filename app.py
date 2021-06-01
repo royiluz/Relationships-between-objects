@@ -22,11 +22,15 @@ def getRelations(img_path):
     detector.setModelPath(model_path)
     detector.loadModel()
     detection = detector.detectObjectsFromImage(input_image=img_path, output_image_path=output_path)
-
     relations = []
-
+    names = {}
     # Iterate each pair of objects
     for i in range(len(detection)):
+        if detection[i]["name"] in names:
+            names[detection[i]["name"]] += 1
+        else:
+            names[detection[i]["name"]] = 1
+
         for j in range(i + 1, len(detection)):
             obj_1 = detection[i]
             obj_2 = detection[j]
@@ -75,11 +79,11 @@ def getRelations(img_path):
                 elif (obj_1_x1 + obj_1_width * 0.5 > obj_2_x2) or (obj_2_x2 - obj_2_width * 0.5 < obj_1_x1):
                     print(f"{obj_1['name']} right to {obj_2['name']}")
                     relations.append(f"{obj_1['name']} right to {obj_2['name']}")
-    return relations
+
+    return relations, names
 
 
 if __name__ == "__main__":
-
     tf.compat.v1.disable_eager_execution()
 
     # input/output values:
@@ -99,19 +103,11 @@ if __name__ == "__main__":
         uploaded_file = request.files['image_file']
         if uploaded_file.filename != '':
             uploaded_file.save(uploaded_file.filename)
-            relations = getRelations(uploaded_file.filename)
+            relations, names = getRelations(uploaded_file.filename)
             im = Image.open("new_pic.jpg")
             data = io.BytesIO()
             im.save(data, "JPEG")
             encoded_img_data = base64.b64encode(data.getvalue())
-        return render_template('resultsform.html', relations=relations, image=encoded_img_data.decode('utf-8'))
+        return render_template('resultsform.html', relations=relations, names= names, image=encoded_img_data.decode('utf-8'))
 
     app.run("localhost", "9999", debug=True)
-
-
-
-
-
-
-
-
