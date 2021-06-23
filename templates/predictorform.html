@@ -8,8 +8,18 @@
   <body>
     <h1>Extracting relationships between objects from pictures</h1>
     <form method="POST" action="http://localhost:9999/results" enctype="multipart/form-data">
-      <p><input type="file" name="image_file" accept="image/*"></p>
-      <p><input type="submit" value="Get relations"></p>
+      <p><input id="input_image" type="file" name="image_file" accept="image/*"></p>
+      <p><input type="submit" value="Get relations" onclick="showLoading(document.getElementById('input_image'))"></p>
     </form>
+    <div id="loader"></div>
+  <script>
+    function showLoading(input_image) {
+      if(input_image.files[0])
+        document.getElementById("loader").style.display = "block";
+    }
+    function hideLoading() {
+      document.getElementById("loader").style.display = "none";
+    }
+  </script>
   </body>
 </html>
