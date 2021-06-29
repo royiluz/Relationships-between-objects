@@ -34,6 +34,7 @@ def getRelations(img_path):
             names[detection[i]["name"]] = 1
 
         for j in range(i + 1, len(detection)):
+            flag = 0
             obj_1 = detection[i]
             obj_2 = detection[j]
 
@@ -64,9 +65,11 @@ def getRelations(img_path):
                         if obj_1_y1 + chair_height * 0.66 < obj_2_y2:
                             print(f'{obj_2["name"]} under chair')
                             relations.append(f'{obj_2["name"]} under chair')
+                            flag = 1
                         else:
                             print(f'{obj_2["name"]} above chair')
                             relations.append(f'{obj_2["name"]} above chair')
+                            flag = 1
 
             # Check relation between Cup and Table:
             elif (obj_1["name"] == TABLE) and (obj_2["name"] not in TABLE_CHAIR):
@@ -75,12 +78,14 @@ def getRelations(img_path):
                     if (obj_2_y2 < obj_1_y1 + table_height * 0.3) and (obj_1_y1 - table_height * 0.3 < obj_2_y2):
                         print(f'{obj_2["name"]} above table')
                         relations.append(f'{obj_2["name"]} above table')
+                        flag = 1
                     elif obj_2_y2 < obj_2_y2:
                         print(f'{obj_2["name"]} under table')
                         relations.append(f'{obj_2["name"]} under table')
+                        flag = 1
 
             # Check relation between any objects Left and Right:
-            else:
+            if flag == 0:
                 if ((obj_1_x2 - obj_1_width * 0.5 < obj_2_x1) or (
                         obj_2_x1 + obj_2_width * 0.5 > obj_1_x2)) and obj_1_x1 < obj_2_x1:
                     print(f"{obj_1['name']} left to {obj_2['name']}")
