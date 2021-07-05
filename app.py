@@ -38,6 +38,10 @@ def getRelations(img_path):
             obj_1 = detection[i]
             obj_2 = detection[j]
 
+            # Rename dinning table to Table
+            obj_1["name"] = 'Table' if obj_1["name"] == TABLE else obj_1["name"]
+            obj_2["name"] = 'Table' if obj_2["name"] == TABLE else obj_2["name"]
+
             # Make sure chair is obj_1 and table is obj_2 (if exist!):
             if obj_2["name"] == CHAIR and obj_1["name"] == TABLE:
                 temp = obj_1
@@ -64,11 +68,11 @@ def getRelations(img_path):
                     if obj_1_y1 < obj_2_y1:
                         if obj_1_y1 + chair_height * 0.66 < obj_2_y2:
                             print(f'{obj_2["name"]} under chair')
-                            relations.append(f'{obj_2["name"]} under chair')
+                            relations.append(f'Under({obj_2["name"]}, Chair)')
                             flag = 1
                         else:
                             print(f'{obj_2["name"]} above chair')
-                            relations.append(f'{obj_2["name"]} above chair')
+                            relations.append(f'Above({obj_2["name"]}, Chair)')
                             flag = 1
 
             # Check relation between Cup and Table:
@@ -77,23 +81,23 @@ def getRelations(img_path):
                 if obj_1_x1 < obj_2_x1 + obj_2_width * 0.2 and obj_2_x2 - obj_2_width * 0.2 < obj_1_x2:
                     if (obj_2_y2 < obj_1_y1 + table_height * 0.3) and (obj_1_y1 - table_height * 0.3 < obj_2_y2):
                         print(f'{obj_2["name"]} above table')
-                        relations.append(f'{obj_2["name"]} above table')
+                        relations.append(f'Above({obj_2["name"]}, Table)')
                         flag = 1
                     elif obj_2_y2 < obj_2_y2:
                         print(f'{obj_2["name"]} under table')
-                        relations.append(f'{obj_2["name"]} under table')
+                        relations.append(f'Under({obj_2["name"]}, Table)')
                         flag = 1
 
             # Check relation between any objects Left and Right:
             if flag == 0:
                 if ((obj_1_x2 - obj_1_width * 0.5 < obj_2_x1) or (
                         obj_2_x1 + obj_2_width * 0.5 > obj_1_x2)) and obj_1_x1 < obj_2_x1:
-                    print(f"{obj_1['name']} left to {obj_2['name']}")
-                    relations.append(f"{obj_1['name']} left to {obj_2['name']}")
+                    print(f"Left({obj_1['name']}, {obj_2['name']})")
+                    relations.append(f"Left({obj_1['name']}, {obj_2['name']})")
                 elif ((obj_1_x1 + obj_1_width * 0.5 > obj_2_x2) or (
                         obj_2_x2 - obj_2_width * 0.5 < obj_1_x1)) and obj_1_x2 > obj_2_x2:
                     print(f"{obj_1['name']} right to {obj_2['name']}")
-                    relations.append(f"{obj_1['name']} right to {obj_2['name']}")
+                    relations.append(f"Right({obj_1['name']}, {obj_2['name']})")
                 elif ((obj_1["name"] == CHAIR) and (obj_2["name"] == TABLE)) or (
                         (obj_2["name"] == CHAIR) and (obj_1["name"] == TABLE)):
                     print(f"CHAIR AND TABLE relations")
@@ -132,9 +136,9 @@ def getRelationByModel(obj_1, obj_2, img_path):
     print(classes_proba)
 
     if classes[0] == 0:
-        return 'Chair behind table'
+        return 'Behind(Chair, Table)'
     else:
-        return 'Chair in front of table'
+        return 'In front of(Chair, Table)'
 
 
 if __name__ == "__main__":
