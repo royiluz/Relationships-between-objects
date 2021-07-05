@@ -39,8 +39,8 @@ def getRelations(img_path):
             obj_2 = detection[j]
 
             # Rename dinning table to Table
-            obj_1["name"] = 'Table' if obj_1["name"] == "dining table" else obj_1["name"]
-            obj_2["name"] = 'Table' if obj_2["name"] == "dining table" else obj_2["name"]
+            obj_1["name"] = 'table' if obj_1["name"] == "dining table" else obj_1["name"]
+            obj_2["name"] = 'table' if obj_2["name"] == "dining table" else obj_2["name"]
 
             # Make sure chair is obj_1 and table is obj_2 (if exist!):
             if obj_2["name"] == CHAIR and obj_1["name"] == TABLE:
