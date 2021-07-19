@@ -83,7 +83,7 @@ def getRelations(img_path):
                         print(f'{obj_2["name"]} above table')
                         relations.append(f'Above({obj_2["name"]}, table)')
                         flag = 1
-                    elif obj_2_y2 < obj_2_y2:
+                    else:
                         print(f'{obj_2["name"]} under table')
                         relations.append(f'Under({obj_2["name"]}, table)')
                         flag = 1
